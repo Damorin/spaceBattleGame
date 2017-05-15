@@ -95,13 +95,14 @@ public class GameTest {
 
 //    int[] params = { 4, 4, 1, 2, 5, 20}; //ValidParams.optimalParams50[33];
 //    int[] params = { 10, 5, 1, 1, 4, 20};
-        int[] params = {5, 4, 1, 2, 5, 20};
+        int[] params = {5, 5, 1, 2, 10, 20};
         Constants.SHIP_MAX_SPEED = params[0];
         Constants.THRUST_SPEED = params[1];
         Constants.MISSILE_COST = params[2];
         Constants.MISSILE_MAX_SPEED = params[3];
         Constants.MISSILE_COOLDOWN = params[4];
         Constants.SHIP_RADIUS = params[5];
+        Constants.FRICTION = 1;
 
         playOne(7, 2, true, 0);
 
@@ -179,52 +180,52 @@ public class GameTest {
         return (game.getGameScore(1) > game.getGameScore(0) ? 1 : 0);
     }
 
-  public static double[] playNAndMean(int nbRuns, int id1, int id2) {
+    public static double[] playNAndMean(int nbRuns, int id1, int id2) {
 
-      boolean visuals = false;
-      double[][] res = new double[nbRuns][4];
-      for (int i = 0; i < nbRuns; i++) {
-          Random rdm = new Random();
+        boolean visuals = false;
+        double[][] res = new double[nbRuns][4];
+        for (int i = 0; i < nbRuns; i++) {
+            Random rdm = new Random();
 
-          StateObservationMulti game = new StateObservationMulti(false);
-          AbstractMultiPlayer[] players = new AbstractMultiPlayer[2];
-          String p1 = testedControllers[id1];
-          String p2 = testedControllers[id2];
-          players[0] = createMultiPlayer("controllers." + p1 + ".Agent", game, rdm.nextInt(), 0, false);
-          players[1] = createMultiPlayer("controllers." + p2 + ".Agent", game, rdm.nextInt(), 1, false);
-          if (id1 == 0) {
-              game.cheating = 0;
-          } else if (id2 == 0) {
-              game.cheating = 1;
-          } else {
-              game.cheating = -1;
-          }
-          game.playGame(players, rdm.nextInt());
+            StateObservationMulti game = new StateObservationMulti(false);
+            AbstractMultiPlayer[] players = new AbstractMultiPlayer[2];
+            String p1 = testedControllers[id1];
+            String p2 = testedControllers[id2];
+            players[0] = createMultiPlayer("controllers." + p1 + ".Agent", game, rdm.nextInt(), 0, false);
+            players[1] = createMultiPlayer("controllers." + p2 + ".Agent", game, rdm.nextInt(), 1, false);
+            if (id1 == 0) {
+                game.cheating = 0;
+            } else if (id2 == 0) {
+                game.cheating = 1;
+            } else {
+                game.cheating = -1;
+            }
+            game.playGame(players, rdm.nextInt());
 
-          if (game.getScoreRecord() == null) {
-              System.out.println("OH ! no score record, great! ");
-          }
-          double state0;
-          double state1;
-          if (game.getGameScore(0) > game.getGameScore(1)) {
-              state0 = 1;
-              state1 = 0;
-          } else if (game.getGameScore(0) < game.getGameScore(1)) {
-              state0 = 0;
-              state1 = 1;
-          } else {
-              state0 = 0.5;
-              state1 = 0.5;
-          }
-          res[i][0] = state0;
-          res[i][1] = game.getGameScore(0);
-          res[i][2] = state1;
-          res[i][3] = game.getGameScore(1);
-          System.out.println(i + " " + res[i][0] + " " + res[i][1] + " " + res[i][2] + " " + res[i][3]);
-      }
-      double[] meanRes = Utils.meanArray(res);
+            if (game.getScoreRecord() == null) {
+                System.out.println("OH ! no score record, great! ");
+            }
+            double state0;
+            double state1;
+            if (game.getGameScore(0) > game.getGameScore(1)) {
+                state0 = 1;
+                state1 = 0;
+            } else if (game.getGameScore(0) < game.getGameScore(1)) {
+                state0 = 0;
+                state1 = 1;
+            } else {
+                state0 = 0.5;
+                state1 = 0.5;
+            }
+            res[i][0] = state0;
+            res[i][1] = game.getGameScore(0);
+            res[i][2] = state1;
+            res[i][3] = game.getGameScore(1);
+            System.out.println(i + " " + res[i][0] + " " + res[i][1] + " " + res[i][2] + " " + res[i][3]);
+        }
+        double[] meanRes = Utils.meanArray(res);
 //    System.out.println(nbRuns + " " + meanRes[0] + " " + meanRes[1] + " " + meanRes[2] + " " + meanRes[3] );
-      return meanRes;
+        return meanRes;
     }
 
     public static void playMany(int nbRuns, int id1, int id2) {
